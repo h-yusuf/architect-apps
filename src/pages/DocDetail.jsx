@@ -120,7 +120,31 @@ export default function DocDetail() {
               {doc.description}
             </p>
           )}
-          <div className="mt-8 h-px w-12" style={{ background: 'var(--accent)' }} />
+          <div className="mt-8 flex items-center gap-6">
+            <div className="h-px w-12" style={{ background: 'var(--accent)' }} />
+            <button
+              onClick={() => {
+                const blob = new Blob([doc.content], { type: 'text/markdown' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${doc.slug}.md`;
+                a.click();
+                URL.revokeObjectURL(url);
+              }}
+              className="flex items-center gap-2 uppercase tracking-[0.18em] font-semibold transition-colors duration-200"
+              style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.58rem', color: 'var(--text-3)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+              onMouseEnter={e => e.currentTarget.style.color = 'var(--accent)'}
+              onMouseLeave={e => e.currentTarget.style.color = 'var(--text-3)'}
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="7 10 12 15 17 10" />
+                <line x1="12" y1="15" x2="12" y2="3" />
+              </svg>
+              Download .md
+            </button>
+          </div>
         </div>
       </div>
 
