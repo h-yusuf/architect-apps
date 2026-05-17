@@ -143,7 +143,42 @@ export default function AdminEditDoc() {
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <label className="text-[#7a6d5e] text-xs uppercase tracking-wider font-medium">Konten Markdown</label>
+            <div className="flex items-center justify-between">
+              <label className="text-[#7a6d5e] text-xs uppercase tracking-wider font-medium">Konten Markdown</label>
+              <label
+                className="cursor-pointer flex items-center gap-1.5 text-xs font-medium transition-colors"
+                style={{ color: '#c4955a' }}
+                onMouseEnter={e => e.currentTarget.style.color = '#d4a56a'}
+                onMouseLeave={e => e.currentTarget.style.color = '#c4955a'}
+              >
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="17 8 12 3 7 8" />
+                  <line x1="12" y1="3" x2="12" y2="15" />
+                </svg>
+                Upload .md
+                <input
+                  type="file"
+                  accept=".md,text/markdown,text/plain"
+                  className="hidden"
+                  onChange={e => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    const reader = new FileReader();
+                    reader.onload = ev => {
+                      setContent(ev.target.result);
+                      if (!title && !slugManual) {
+                        const name = file.name.replace(/\.md$/i, '').replace(/[-_]/g, ' ');
+                        setTitle(name);
+                        setSlug(generateSlug(name));
+                      }
+                    };
+                    reader.readAsText(file);
+                    e.target.value = '';
+                  }}
+                />
+              </label>
+            </div>
             <textarea
               value={content}
               onChange={e => setContent(e.target.value)}
