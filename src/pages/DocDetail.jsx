@@ -3,11 +3,14 @@ import { useParams, Link } from 'react-router-dom';
 import { getDocBySlug } from '../hooks/useDocs';
 import MarkdownRenderer from '../components/MarkdownRenderer';
 import ThemeToggle from '../components/ThemeToggle';
+import useAuth from '../hooks/useAuth';
 
 export default function DocDetail() {
   const { slug } = useParams();
   const [doc, setDoc] = useState(null);
   const [status, setStatus] = useState('loading');
+  const { user } = useAuth();
+  const isAdmin = user && !user.isAnonymous;
 
   useEffect(() => {
     setStatus('loading');
@@ -122,7 +125,7 @@ export default function DocDetail() {
           )}
           <div className="mt-8 flex items-center gap-6">
             <div className="h-px w-12" style={{ background: 'var(--accent)' }} />
-            <button
+            {isAdmin && <button
               onClick={() => {
                 const blob = new Blob([doc.content], { type: 'text/markdown' });
                 const url = URL.createObjectURL(blob);
@@ -143,7 +146,7 @@ export default function DocDetail() {
                 <line x1="12" y1="15" x2="12" y2="3" />
               </svg>
               Download .md
-            </button>
+            </button>}
           </div>
         </div>
       </div>
