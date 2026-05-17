@@ -9,7 +9,6 @@ export default function Navbar() {
         </Link>
         <div className="flex gap-6 text-sm text-[#888]">
           <Link to="/" className="hover:text-[#e5e5e5] transition-colors">Home</Link>
-          <Link to="/about" className="hover:text-[#e5e5e5] transition-colors">About</Link>
         </div>
       </div>
     </nav>
