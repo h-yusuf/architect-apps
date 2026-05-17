@@ -10,6 +10,7 @@ export default function DocDetail() {
   const [status, setStatus] = useState('loading'); // loading | ok | not_found | error
 
   useEffect(() => {
+    setStatus('loading');
     getDocBySlug(slug)
       .then(data => {
         if (!data) { setStatus('not_found'); return; }
@@ -20,35 +21,80 @@ export default function DocDetail() {
   }, [slug]);
 
   const shell = (children) => (
-    <div className="min-h-screen bg-[#0f0f0f] text-[#e5e5e5]">
+    <div className="min-h-screen bg-[#0b0a09] text-[#ede4d4]">
       <Navbar />
-      <main className="max-w-5xl mx-auto px-6 py-12">{children}</main>
+      <main className="max-w-5xl mx-auto px-8 py-14">{children}</main>
     </div>
   );
 
-  if (status === 'loading') return shell(<p className="text-[#888] text-sm">Memuat...</p>);
+  if (status === 'loading') return shell(
+    <p
+      className="text-[#3d3630]"
+      style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.75rem', letterSpacing: '0.1em' }}
+    >
+      Memuat...
+    </p>
+  );
 
   if (status === 'not_found') return shell(
-    <>
-      <p className="text-[#888]">Dokumen tidak ditemukan.</p>
-      <Link to="/" className="text-indigo-500 text-sm mt-2 inline-block hover:underline">
+    <div className="anim-fade-in">
+      <p
+        className="text-[#7a6d5e] mb-5"
+        style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.85rem' }}
+      >
+        Dokumen tidak ditemukan.
+      </p>
+      <Link
+        to="/"
+        className="text-[#c4955a] hover:text-[#ede4d4] transition-colors uppercase tracking-[0.18em] font-medium"
+        style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.62rem' }}
+      >
         ← Kembali
       </Link>
-    </>
+    </div>
   );
 
   if (status === 'error') return shell(
-    <p className="text-red-400 text-sm">Gagal memuat dokumen.</p>
+    <p className="text-red-400" style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.8rem' }}>
+      Gagal memuat dokumen.
+    </p>
   );
 
   return shell(
-    <>
-      <Link to="/" className="text-sm text-[#888] hover:text-indigo-400 transition-colors mb-8 inline-block">
+    <div className="anim-fade-in">
+      {/* Back link */}
+      <Link
+        to="/"
+        className="text-[#7a6d5e] hover:text-[#c4955a] transition-colors uppercase tracking-[0.18em] font-medium inline-block mb-14"
+        style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.62rem' }}
+      >
         ← Kembali
       </Link>
-      <h1 className="text-2xl font-bold mb-2">{doc.title}</h1>
-      <p className="text-[#888] mb-8">{doc.description}</p>
+
+      {/* Document header */}
+      <header className="mb-12">
+        <h1
+          className="text-[#ede4d4] font-light leading-[1.08] mb-4"
+          style={{
+            fontFamily: "'Cormorant Garamond', serif",
+            fontSize: 'clamp(2.2rem, 5vw, 3.4rem)',
+            letterSpacing: '-0.01em',
+          }}
+        >
+          {doc.title}
+        </h1>
+        {doc.description && (
+          <p
+            className="text-[#7a6d5e] font-normal leading-relaxed mb-7"
+            style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.82rem', maxWidth: '52ch' }}
+          >
+            {doc.description}
+          </p>
+        )}
+        <div className="h-px bg-[#c4955a] w-14" />
+      </header>
+
       <MarkdownRenderer content={doc.content} />
-    </>
+    </div>
   );
 }

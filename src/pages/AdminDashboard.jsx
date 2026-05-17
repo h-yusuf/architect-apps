@@ -30,7 +30,7 @@ export default function AdminDashboard() {
   const handleLogout = async () => {
     try {
       await signOut(auth);
-      await signInAnonymously(auth); // restore anonymous session for visitor tracking
+      await signInAnonymously(auth);
     } catch {
       setError('Gagal logout. Coba lagi.');
       return;
@@ -38,57 +38,65 @@ export default function AdminDashboard() {
     navigate('/');
   };
 
+  const syne = { fontFamily: "'Syne', sans-serif" };
+
   return (
-    <div className="min-h-screen bg-[#0f0f0f] text-[#e5e5e5]">
-      <nav className="border-b border-[#333] bg-[#1a1a1a]">
+    <div className="min-h-screen bg-[#0b0a09] text-[#ede4d4]">
+      <nav className="border-b border-[#2c2620] bg-[#131110]">
         <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
-          <span className="font-bold">Admin Dashboard</span>
+          <span className="text-[#7a6d5e] font-medium tracking-[0.15em] uppercase" style={{ ...syne, fontSize: '0.62rem' }}>
+            Admin Dashboard
+          </span>
           <div className="flex gap-4 items-center">
             <button
               onClick={() => navigate('/admin/doc/new')}
-              className="bg-indigo-600 hover:bg-indigo-500 text-white text-sm px-4 py-2 rounded-lg transition-colors"
+              className="bg-[#c4955a] hover:bg-[#d4a56a] text-[#0b0a09] font-semibold px-4 py-1.5 rounded text-sm transition-colors"
+              style={syne}
             >
               + Dokumen Baru
             </button>
             <button
               onClick={handleLogout}
-              className="text-sm text-[#888] hover:text-[#e5e5e5] transition-colors"
+              className="text-[#7a6d5e] hover:text-[#ede4d4] transition-colors text-sm"
+              style={syne}
             >
               Logout
             </button>
           </div>
         </div>
       </nav>
+
       <main className="max-w-4xl mx-auto px-6 py-8">
-        {error && <p className="text-red-400 mb-4 text-sm">{error}</p>}
-        <table className="w-full text-sm">
+        {error && <p className="text-red-400 mb-5 text-xs" style={syne}>{error}</p>}
+
+        <table className="w-full text-sm" style={syne}>
           <thead>
-            <tr className="text-[#888] text-left border-b border-[#333]">
-              <th className="pb-3 pr-4 font-medium">#</th>
-              <th className="pb-3 pr-4 font-medium">Judul</th>
-              <th className="pb-3 pr-4 font-medium">Slug</th>
-              <th className="pb-3 font-medium">Aksi</th>
+            <tr className="text-[#3d3630] text-left border-b border-[#2c2620]">
+              <th className="pb-3 pr-4 font-medium text-xs tracking-wider uppercase">#</th>
+              <th className="pb-3 pr-4 font-medium text-xs tracking-wider uppercase">Judul</th>
+              <th className="pb-3 pr-4 font-medium text-xs tracking-wider uppercase">Slug</th>
+              <th className="pb-3 font-medium text-xs tracking-wider uppercase">Aksi</th>
             </tr>
           </thead>
           <tbody>
             {docs.map(doc => (
-              <tr key={doc.id} className="border-b border-[#222]">
-                <td className="py-3 pr-4 text-[#444]">{doc.order}</td>
-                <td className="py-3 pr-4">
-                  <div className="font-medium text-[#e5e5e5]">{doc.title}</div>
-                  <div className="text-[#888] text-xs mt-0.5">{doc.description}</div>
+              <tr key={doc.id} className="border-b border-[#1c1915] hover:bg-[#131110] transition-colors">
+                <td className="py-3.5 pr-4 text-[#3d3630] text-xs">{doc.order}</td>
+                <td className="py-3.5 pr-4">
+                  <div className="font-medium text-[#ede4d4] text-sm">{doc.title}</div>
+                  <div className="text-[#7a6d5e] text-xs mt-0.5">{doc.description}</div>
                 </td>
-                <td className="py-3 pr-4 text-[#888] font-mono text-xs">{doc.slug}</td>
-                <td className="py-3 flex gap-4">
+                <td className="py-3.5 pr-4 text-[#7a6d5e] font-mono text-xs">{doc.slug}</td>
+                <td className="py-3.5 flex gap-4">
                   <button
                     onClick={() => navigate(`/admin/doc/${doc.id}/edit`)}
-                    className="text-indigo-400 hover:text-indigo-300 transition-colors"
+                    className="text-[#c4955a] hover:text-[#ede4d4] transition-colors text-xs font-medium"
                   >
                     Edit
                   </button>
                   <button
                     onClick={() => handleDelete(doc.id, doc.title)}
-                    className="text-red-400 hover:text-red-300 transition-colors"
+                    className="text-[#7a6d5e] hover:text-red-400 transition-colors text-xs font-medium"
                   >
                     Hapus
                   </button>
@@ -97,8 +105,11 @@ export default function AdminDashboard() {
             ))}
           </tbody>
         </table>
+
         {docs.length === 0 && !error && (
-          <p className="text-[#888] text-sm text-center mt-12">Belum ada dokumen.</p>
+          <p className="text-[#3d3630] text-sm text-center mt-16" style={syne}>
+            Belum ada dokumen.
+          </p>
         )}
       </main>
     </div>

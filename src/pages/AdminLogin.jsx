@@ -32,36 +32,62 @@ export default function AdminLogin() {
     }
   };
 
+  const inputCls = "bg-[#0b0a09] border border-[#2c2620] rounded px-4 py-2.5 text-[#ede4d4] text-sm outline-none focus:border-[#c4955a] transition-colors w-full";
+
   return (
-    <div className="min-h-screen bg-[#0f0f0f] flex items-center justify-center">
-      <div className="bg-[#1a1a1a] border border-[#333] rounded-xl p-8 w-full max-w-sm">
-        <h1 className="text-[#e5e5e5] font-bold text-xl mb-6">Admin Login</h1>
-        {error && <p className="text-red-400 text-sm mb-4">{error}</p>}
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            required
-            className="bg-[#0f0f0f] border border-[#333] rounded-lg px-4 py-2 text-[#e5e5e5] text-sm outline-none focus:border-indigo-500 transition-colors"
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            required
-            className="bg-[#0f0f0f] border border-[#333] rounded-lg px-4 py-2 text-[#e5e5e5] text-sm outline-none focus:border-indigo-500 transition-colors"
-          />
-          <button
-            type="submit"
-            disabled={submitting}
-            className="bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white rounded-lg px-4 py-2 text-sm font-medium transition-colors"
+    <div className="min-h-screen bg-[#0b0a09] flex items-center justify-center px-4">
+      <div className="w-full max-w-sm">
+        {/* Logo mark */}
+        <div className="mb-10 text-center">
+          <p
+            className="text-[#ede4d4] font-light tracking-[0.2em] mb-1"
+            style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.2rem' }}
           >
-            {submitting ? 'Masuk...' : 'Masuk'}
-          </button>
-        </form>
+            H. YUSUF
+          </p>
+          <p
+            className="text-[#3d3630] uppercase tracking-[0.2em] font-medium"
+            style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.58rem' }}
+          >
+            Admin
+          </p>
+        </div>
+
+        <div className="bg-[#131110] border border-[#2c2620] rounded-xl p-8">
+          {error && (
+            <p className="text-red-400 mb-5 text-xs leading-relaxed" style={{ fontFamily: "'Syne', sans-serif" }}>
+              {error}
+            </p>
+          )}
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            <input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              required
+              className={inputCls}
+              style={{ fontFamily: "'Syne', sans-serif" }}
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              required
+              className={inputCls}
+              style={{ fontFamily: "'Syne', sans-serif" }}
+            />
+            <button
+              type="submit"
+              disabled={submitting}
+              className="mt-1 bg-[#c4955a] hover:bg-[#d4a56a] disabled:opacity-50 text-[#0b0a09] rounded px-4 py-2.5 text-sm font-semibold transition-colors"
+              style={{ fontFamily: "'Syne', sans-serif" }}
+            >
+              {submitting ? 'Masuk...' : 'Masuk'}
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   );

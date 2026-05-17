@@ -69,80 +69,96 @@ export default function AdminEditDoc() {
     }
   };
 
-  const inputClass = "bg-[#0f0f0f] border border-[#333] rounded-lg px-4 py-2 text-[#e5e5e5] text-sm outline-none focus:border-indigo-500 transition-colors";
+  const syne = { fontFamily: "'Syne', sans-serif" };
+  const inputCls = "bg-[#0b0a09] border border-[#2c2620] rounded px-4 py-2.5 text-[#ede4d4] text-sm outline-none focus:border-[#c4955a] transition-colors w-full";
 
   return (
-    <div className="min-h-screen bg-[#0f0f0f] text-[#e5e5e5]">
-      <nav className="border-b border-[#333] bg-[#1a1a1a]">
-        <div className="max-w-4xl mx-auto px-6 py-4 flex items-center gap-4">
+    <div className="min-h-screen bg-[#0b0a09] text-[#ede4d4]">
+      <nav className="border-b border-[#2c2620] bg-[#131110]">
+        <div className="max-w-4xl mx-auto px-6 py-4 flex items-center gap-5">
           <button
             onClick={() => navigate('/admin/dashboard')}
-            className="text-[#888] hover:text-[#e5e5e5] text-sm transition-colors"
+            className="text-[#7a6d5e] hover:text-[#ede4d4] text-sm transition-colors"
+            style={syne}
           >
             ← Kembali
           </button>
-          <span className="font-bold">{isEdit ? 'Edit Dokumen' : 'Dokumen Baru'}</span>
+          <span className="text-[#3d3630] text-xs">|</span>
+          <span className="font-medium text-sm text-[#ede4d4]" style={syne}>
+            {isEdit ? 'Edit Dokumen' : 'Dokumen Baru'}
+          </span>
         </div>
       </nav>
+
       <main className="max-w-4xl mx-auto px-6 py-8">
-        {error && <p className="text-red-400 mb-4 text-sm">{error}</p>}
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        {error && (
+          <p className="text-red-400 mb-5 text-xs leading-relaxed" style={syne}>{error}</p>
+        )}
+        <form onSubmit={handleSubmit} className="flex flex-col gap-5" style={syne}>
           <div className="grid grid-cols-2 gap-4">
-            <div className="flex flex-col gap-1">
-              <label className="text-xs text-[#888]">Judul</label>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-[#7a6d5e] text-xs uppercase tracking-wider font-medium">Judul</label>
               <input
                 value={title}
                 onChange={handleTitleChange}
                 required
-                className={inputClass}
+                className={inputCls}
+                style={syne}
               />
             </div>
-            <div className="flex flex-col gap-1">
-              <label className="text-xs text-[#888]">Order</label>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-[#7a6d5e] text-xs uppercase tracking-wider font-medium">Order</label>
               <input
                 type="number"
                 value={order}
                 onChange={e => setOrder(e.target.value)}
                 required
-                className={inputClass}
+                className={inputCls}
+                style={syne}
               />
             </div>
           </div>
-          <div className="flex flex-col gap-1">
-            <label className="text-xs text-[#888]">Deskripsi Singkat</label>
+
+          <div className="flex flex-col gap-1.5">
+            <label className="text-[#7a6d5e] text-xs uppercase tracking-wider font-medium">Deskripsi Singkat</label>
             <input
               value={description}
               onChange={e => setDescription(e.target.value)}
               required
-              className={inputClass}
+              className={inputCls}
+              style={syne}
             />
           </div>
-          <div className="flex flex-col gap-1">
-            <label className="text-xs text-[#888]">
-              Slug (URL) — auto dari judul, bisa override
+
+          <div className="flex flex-col gap-1.5">
+            <label className="text-[#7a6d5e] text-xs uppercase tracking-wider font-medium">
+              Slug (URL) — auto dari judul
             </label>
             <input
               value={slug}
               onChange={e => { setSlug(e.target.value); setSlugManual(true); }}
               required
-              className={`${inputClass} font-mono`}
+              className={`${inputCls} font-mono`}
             />
           </div>
-          <div className="flex flex-col gap-1">
-            <label className="text-xs text-[#888]">Konten Markdown</label>
+
+          <div className="flex flex-col gap-1.5">
+            <label className="text-[#7a6d5e] text-xs uppercase tracking-wider font-medium">Konten Markdown</label>
             <textarea
               value={content}
               onChange={e => setContent(e.target.value)}
-              rows={20}
+              rows={22}
               required
-              className={`${inputClass} font-mono resize-y`}
+              className={`${inputCls} font-mono resize-y`}
             />
           </div>
-          <div className="flex justify-end">
+
+          <div className="flex justify-end pt-2">
             <button
               type="submit"
               disabled={submitting}
-              className="bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white px-6 py-2 rounded-lg text-sm font-medium transition-colors"
+              className="bg-[#c4955a] hover:bg-[#d4a56a] disabled:opacity-50 text-[#0b0a09] font-semibold px-6 py-2.5 rounded text-sm transition-colors"
+              style={syne}
             >
               {submitting ? 'Menyimpan...' : 'Simpan'}
             </button>
