@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 function extractTOC(content) {
   const headings = [];
@@ -82,6 +83,7 @@ export default function MarkdownRenderer({ content }) {
         }}
       >
         <ReactMarkdown
+          remarkPlugins={[remarkGfm]}
           components={{
             h2({ children }) {
               return (
