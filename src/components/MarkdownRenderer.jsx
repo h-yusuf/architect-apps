@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 
 function extractTOC(content) {
@@ -28,6 +29,29 @@ function headingId(children) {
   return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 }
 
+function TocLink({ level, text, id }) {
+  const [hovered, setHovered] = useState(false);
+  return (
+    <a
+      href={`#${id}`}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      className="leading-snug block"
+      style={{
+        fontFamily: "'Syne', sans-serif",
+        fontSize: level === 3 ? '0.67rem' : '0.72rem',
+        fontWeight: level === 3 ? 400 : 500,
+        paddingLeft: level === 3 ? '0.6rem' : '0',
+        textDecoration: 'none',
+        color: hovered ? 'var(--accent)' : 'var(--text-2)',
+        transition: 'color 0.15s ease',
+      }}
+    >
+      {text}
+    </a>
+  );
+}
+
 export default function MarkdownRenderer({ content }) {
   if (!content) return null;
   const toc = extractTOC(content);
@@ -37,22 +61,22 @@ export default function MarkdownRenderer({ content }) {
       <article
         className="flex-1 min-w-0 prose prose-invert max-w-none"
         style={{
-          '--tw-prose-body': '#b0a498',
-          '--tw-prose-headings': '#ede4d4',
-          '--tw-prose-lead': '#7a6d5e',
-          '--tw-prose-links': '#c4955a',
-          '--tw-prose-bold': '#ede4d4',
-          '--tw-prose-counters': '#7a6d5e',
-          '--tw-prose-bullets': '#3d3630',
-          '--tw-prose-hr': '#2c2620',
-          '--tw-prose-quotes': '#ede4d4',
-          '--tw-prose-quote-borders': '#c4955a',
-          '--tw-prose-captions': '#7a6d5e',
-          '--tw-prose-code': '#e2d4c0',
-          '--tw-prose-pre-code': '#ede4d4',
-          '--tw-prose-pre-bg': '#131110',
-          '--tw-prose-th-borders': '#2c2620',
-          '--tw-prose-td-borders': '#1c1915',
+          '--tw-prose-body': 'var(--prose-body)',
+          '--tw-prose-headings': 'var(--prose-headings)',
+          '--tw-prose-lead': 'var(--text-2)',
+          '--tw-prose-links': 'var(--prose-links)',
+          '--tw-prose-bold': 'var(--prose-bold)',
+          '--tw-prose-counters': 'var(--prose-counters)',
+          '--tw-prose-bullets': 'var(--prose-bullets)',
+          '--tw-prose-hr': 'var(--prose-hr)',
+          '--tw-prose-quotes': 'var(--prose-headings)',
+          '--tw-prose-quote-borders': 'var(--prose-quote-border)',
+          '--tw-prose-captions': 'var(--text-2)',
+          '--tw-prose-code': 'var(--prose-code)',
+          '--tw-prose-pre-code': 'var(--prose-headings)',
+          '--tw-prose-pre-bg': 'var(--prose-pre-bg)',
+          '--tw-prose-th-borders': 'var(--border)',
+          '--tw-prose-td-borders': 'var(--prose-td-borders)',
           fontFamily: "'Syne', sans-serif",
           fontSize: '0.9rem',
         }}
@@ -61,20 +85,14 @@ export default function MarkdownRenderer({ content }) {
           components={{
             h2({ children }) {
               return (
-                <h2
-                  id={headingId(children)}
-                  style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 400, letterSpacing: '-0.005em' }}
-                >
+                <h2 id={headingId(children)} style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 400, letterSpacing: '-0.005em' }}>
                   {children}
                 </h2>
               );
             },
             h3({ children }) {
               return (
-                <h3
-                  id={headingId(children)}
-                  style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 400 }}
-                >
+                <h3 id={headingId(children)} style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 400 }}>
                   {children}
                 </h3>
               );
@@ -89,26 +107,17 @@ export default function MarkdownRenderer({ content }) {
         <aside className="hidden lg:block w-48 shrink-0">
           <div className="sticky top-8">
             <p
-              className="text-[#3d3630] uppercase font-semibold tracking-[0.22em] mb-4"
-              style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.55rem' }}
+              className="uppercase font-semibold tracking-[0.22em] mb-4"
+              style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.55rem', color: 'var(--text-3)' }}
             >
               Isi
             </p>
-            <div className="border-l border-[#2c2620] pl-4 flex flex-col gap-3">
+            <div
+              className="flex flex-col gap-3"
+              style={{ borderLeft: '1px solid var(--border)', paddingLeft: '1rem' }}
+            >
               {toc.map(({ level, text, id }) => (
-                <a
-                  key={id}
-                  href={`#${id}`}
-                  className={`text-[#7a6d5e] hover:text-[#c4955a] transition-colors leading-snug block${level === 3 ? ' pl-2.5' : ''}`}
-                  style={{
-                    fontFamily: "'Syne', sans-serif",
-                    fontSize: level === 3 ? '0.67rem' : '0.72rem',
-                    fontWeight: level === 3 ? 400 : 500,
-                    textDecoration: 'none',
-                  }}
-                >
-                  {text}
-                </a>
+                <TocLink key={id} level={level} text={text} id={id} />
               ))}
             </div>
           </div>
