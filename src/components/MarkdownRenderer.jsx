@@ -6,7 +6,9 @@ function extractTOC(content) {
     const match = line.match(/^(#{2,3})\s+(.+)/);
     if (match) {
       const level = match[1].length;
-      const text = match[2].trim();
+      const text = match[2].trim()
+        .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+        .replace(/[*_`~]+/g, '');
       const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
       headings.push({ level, text, id });
     }
@@ -14,14 +16,20 @@ function extractTOC(content) {
   return headings;
 }
 
+function flattenChildren(children) {
+  if (typeof children === 'string') return children;
+  if (Array.isArray(children)) return children.map(flattenChildren).join('');
+  if (children?.props?.children) return flattenChildren(children.props.children);
+  return '';
+}
+
 function headingId(children) {
-  const text = Array.isArray(children)
-    ? children.map(c => (typeof c === 'string' ? c : (c?.props?.children ?? ''))).join('')
-    : String(children);
+  const text = flattenChildren(children);
   return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 }
 
 export default function MarkdownRenderer({ content }) {
+  if (!content) return null;
   const toc = extractTOC(content);
 
   return (
