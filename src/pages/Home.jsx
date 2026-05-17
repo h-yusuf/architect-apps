@@ -6,12 +6,14 @@ import Navbar from '../components/Navbar';
 export default function Home() {
   const [docs, setDocs] = useState([]);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
     listDocs()
       .then(setDocs)
-      .catch(() => setError('Gagal memuat dokumen.'));
+      .catch(() => setError('Gagal memual dokumen.'))
+      .finally(() => setLoading(false));
   }, []);
 
   return (
@@ -19,6 +21,7 @@ export default function Home() {
       <Navbar />
       <main className="max-w-2xl mx-auto px-6 py-12">
         {error && <p className="text-red-400 mb-6 text-sm">{error}</p>}
+        {loading && <p className="text-[#888] text-sm text-center">Memuat...</p>}
         <div className="divide-y divide-[#222]">
           {docs.map((doc, i) => (
             <button
@@ -39,7 +42,7 @@ export default function Home() {
             </button>
           ))}
         </div>
-        {docs.length === 0 && !error && (
+        {!loading && docs.length === 0 && !error && (
           <p className="text-[#888] text-sm text-center mt-12">Belum ada dokumen.</p>
         )}
       </main>

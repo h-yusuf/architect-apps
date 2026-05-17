@@ -28,8 +28,13 @@ export default function AdminDashboard() {
   };
 
   const handleLogout = async () => {
-    await signOut(auth);
-    await signInAnonymously(auth); // restore anonymous session for visitor tracking
+    try {
+      await signOut(auth);
+      await signInAnonymously(auth); // restore anonymous session for visitor tracking
+    } catch {
+      setError('Gagal logout. Coba lagi.');
+      return;
+    }
     navigate('/');
   };
 

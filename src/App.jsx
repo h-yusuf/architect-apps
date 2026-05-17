@@ -11,7 +11,9 @@ import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   useEffect(() => {
-    signInAnonymously(auth).catch(console.error);
+    if (!auth.currentUser || auth.currentUser.isAnonymous) {
+      signInAnonymously(auth).catch(console.error);
+    }
   }, []);
 
   return (
