@@ -15,7 +15,10 @@ function extractTOC(content) {
 }
 
 function headingId(children) {
-  return String(children).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  const text = Array.isArray(children)
+    ? children.map(c => (typeof c === 'string' ? c : (c?.props?.children ?? ''))).join('')
+    : String(children);
+  return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 }
 
 export default function MarkdownRenderer({ content }) {
