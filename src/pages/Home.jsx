@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { listDocs } from '../hooks/useDocs';
+import { listDocs, listPublishedDocs } from '../hooks/useDocs';
+import useAuth from '../hooks/useAuth';
 import ThemeToggle from '../components/ThemeToggle';
 
 function CardVisual({ number, size = 'sm' }) {
@@ -77,6 +78,24 @@ function FeaturedCard({ doc, onClick }) {
           >
             {doc.title}
           </h2>
+          {!doc.published && (
+            <span
+              style={{
+                fontFamily: "'Syne', sans-serif",
+                fontSize: '0.5rem',
+                color: '#7a6d5e',
+                background: '#1c1915',
+                border: '1px solid #2c2620',
+                borderRadius: '2px',
+                padding: '2px 6px',
+                letterSpacing: '0.15em',
+                textTransform: 'uppercase',
+                display: 'inline-block',
+              }}
+            >
+              Private
+            </span>
+          )}
           <p
             className="leading-relaxed"
             style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.82rem', maxWidth: '42ch', color: 'var(--text-2)' }}
@@ -126,6 +145,24 @@ function GridCard({ doc, number, delay, onClick }) {
         >
           {doc.title}
         </h2>
+        {!doc.published && (
+          <span
+            style={{
+              fontFamily: "'Syne', sans-serif",
+              fontSize: '0.5rem',
+              color: '#7a6d5e',
+              background: '#1c1915',
+              border: '1px solid #2c2620',
+              borderRadius: '2px',
+              padding: '2px 6px',
+              letterSpacing: '0.15em',
+              textTransform: 'uppercase',
+              display: 'inline-block',
+            }}
+          >
+            Private
+          </span>
+        )}
         <p
           className="leading-relaxed flex-1"
           style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.75rem', color: 'var(--text-2)' }}
@@ -153,13 +190,18 @@ export default function Home() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const { user, loading: authLoading } = useAuth();
+  const isAdmin = user && !user.isAnonymous;
 
   useEffect(() => {
-    listDocs()
+    if (authLoading) return;
+    setLoading(true);
+    const fetcher = isAdmin ? listDocs() : listPublishedDocs();
+    fetcher
       .then(setDocs)
       .catch(() => setError('Gagal memuat dokumen.'))
       .finally(() => setLoading(false));
-  }, []);
+  }, [isAdmin, authLoading]);
 
   const featured = docs[0] || null;
   const rest = docs.slice(1);
