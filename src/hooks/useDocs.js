@@ -17,6 +17,12 @@ export async function listDocs() {
   return snap.docs.map(d => ({ id: d.id, ...d.data() }));
 }
 
+export async function listPublishedDocs() {
+  const q = query(col, where('published', '==', true), orderBy('order'));
+  const snap = await getDocs(q);
+  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+}
+
 export async function getDocBySlug(slug) {
   const q = query(col, where('slug', '==', slug));
   const snap = await getDocs(q);
