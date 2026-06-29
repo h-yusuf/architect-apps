@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { signOut, signInAnonymously } from 'firebase/auth';
 import { auth } from '../firebase';
-import { listDocs, deleteDoc } from '../hooks/useDocs';
+import { listDocs, deleteDoc, updateDoc } from '../hooks/useDocs';
 
 export default function AdminDashboard() {
   const [docs, setDocs] = useState([]);
@@ -36,6 +36,15 @@ export default function AdminDashboard() {
       return;
     }
     navigate('/');
+  };
+
+  const handleTogglePublish = async (doc) => {
+    try {
+      await updateDoc(doc.id, { published: !doc.published });
+      loadDocs();
+    } catch {
+      setError('Gagal mengubah status dokumen.');
+    }
   };
 
   const syne = { fontFamily: "'Syne', sans-serif" };
@@ -75,6 +84,7 @@ export default function AdminDashboard() {
               <th className="pb-3 pr-4 font-medium text-xs tracking-wider uppercase">#</th>
               <th className="pb-3 pr-4 font-medium text-xs tracking-wider uppercase">Judul</th>
               <th className="pb-3 pr-4 font-medium text-xs tracking-wider uppercase">Slug</th>
+              <th className="pb-3 pr-4 font-medium text-xs tracking-wider uppercase">Status</th>
               <th className="pb-3 font-medium text-xs tracking-wider uppercase">Aksi</th>
             </tr>
           </thead>
@@ -87,6 +97,22 @@ export default function AdminDashboard() {
                   <div className="text-[#7a6d5e] text-xs mt-0.5">{doc.description}</div>
                 </td>
                 <td className="py-3.5 pr-4 text-[#7a6d5e] font-mono text-xs">{doc.slug}</td>
+                <td className="py-3.5 pr-4">
+                  <button
+                    onClick={() => handleTogglePublish(doc)}
+                    className="px-2 py-0.5 rounded text-xs font-semibold uppercase tracking-wider transition-colors"
+                    style={{
+                      fontFamily: "'Syne', sans-serif",
+                      fontSize: '0.52rem',
+                      background: doc.published ? '#1a2e1a' : '#1c1915',
+                      color: doc.published ? '#6db86d' : '#7a6d5e',
+                      border: `1px solid ${doc.published ? '#2d4a2d' : '#2c2620'}`,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    {doc.published ? 'Public' : 'Private'}
+                  </button>
+                </td>
                 <td className="py-3.5 flex gap-4">
                   <button
                     onClick={() => navigate(`/admin/doc/${doc.id}/edit`)}
