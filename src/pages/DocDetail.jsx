@@ -9,10 +9,11 @@ export default function DocDetail() {
   const { slug } = useParams();
   const [doc, setDoc] = useState(null);
   const [status, setStatus] = useState('loading');
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const isAdmin = user && !user.isAnonymous;
 
   useEffect(() => {
+    if (authLoading) return;
     setStatus('loading');
     getDocBySlug(slug)
       .then(data => {
@@ -22,7 +23,7 @@ export default function DocDetail() {
         setStatus('ok');
       })
       .catch(() => setStatus('error'));
-  }, [slug, isAdmin]);
+  }, [slug, isAdmin, authLoading]);
 
   const topBar = (
     <div style={{ borderBottom: '1px solid var(--border)' }}>

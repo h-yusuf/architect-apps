@@ -195,13 +195,14 @@ export default function Home() {
 
   useEffect(() => {
     if (authLoading) return;
+    const adminNow = user && !user.isAnonymous;
     setLoading(true);
-    const fetcher = isAdmin ? listDocs() : listPublishedDocs();
+    const fetcher = adminNow ? listDocs() : listPublishedDocs();
     fetcher
       .then(setDocs)
       .catch(() => setError('Gagal memuat dokumen.'))
       .finally(() => setLoading(false));
-  }, [isAdmin, authLoading]);
+  }, [user, authLoading]);
 
   const featured = docs[0] || null;
   const rest = docs.slice(1);
