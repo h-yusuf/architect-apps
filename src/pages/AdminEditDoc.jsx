@@ -23,6 +23,7 @@ export default function AdminEditDoc() {
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [slugManual, setSlugManual] = useState(false);
+  const [published, setPublished] = useState(false);
 
   useEffect(() => {
     if (!isEdit) return;
@@ -35,6 +36,7 @@ export default function AdminEditDoc() {
         setOrder(d.order);
         setContent(d.content);
         setSlugManual(true);
+        setPublished(d.published ?? false);
       })
       .catch(() => setError('Gagal memuat dokumen.'));
   }, [id, isEdit]);
@@ -55,7 +57,7 @@ export default function AdminEditDoc() {
         setSubmitting(false);
         return;
       }
-      const data = { title, description, slug, order: Number(order), content };
+      const data = { title, description, slug, order: Number(order), content, published };
       if (isEdit) {
         await updateDoc(id, data);
       } else {
@@ -186,6 +188,27 @@ export default function AdminEditDoc() {
               required
               className={`${inputCls} font-mono resize-y`}
             />
+          </div>
+
+          <div className="flex items-center gap-3 pt-1">
+            <button
+              type="button"
+              onClick={() => setPublished(p => !p)}
+              className="relative inline-flex h-5 w-9 items-center rounded-full transition-colors duration-200 focus:outline-none"
+              style={{ background: published ? '#c4955a' : '#2c2620' }}
+              aria-pressed={published}
+            >
+              <span
+                className="inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform duration-200"
+                style={{ transform: published ? 'translateX(18px)' : 'translateX(2px)' }}
+              />
+            </button>
+            <span
+              className="text-xs font-semibold uppercase tracking-wider"
+              style={{ fontFamily: "'Syne', sans-serif", color: published ? '#c4955a' : '#7a6d5e' }}
+            >
+              {published ? 'Public' : 'Private'}
+            </span>
           </div>
 
           <div className="flex justify-end pt-2">
