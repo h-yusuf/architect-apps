@@ -17,11 +17,12 @@ export default function DocDetail() {
     getDocBySlug(slug)
       .then(data => {
         if (!data) { setStatus('not_found'); return; }
+        if (!data.published && !isAdmin) { setStatus('not_found'); return; }
         setDoc(data);
         setStatus('ok');
       })
       .catch(() => setStatus('error'));
-  }, [slug]);
+  }, [slug, isAdmin]);
 
   const topBar = (
     <div style={{ borderBottom: '1px solid var(--border)' }}>
