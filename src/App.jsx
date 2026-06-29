@@ -7,6 +7,7 @@ import DocDetail from "./pages/DocDetail";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminEditDoc from "./pages/AdminEditDoc";
+import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
@@ -33,6 +34,7 @@ function App() {
         path="/admin/doc/:id/edit"
         element={<ProtectedRoute><AdminEditDoc /></ProtectedRoute>}
       />
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 }
