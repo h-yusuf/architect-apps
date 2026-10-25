@@ -6,6 +6,12 @@ import { listDocs, deleteDoc, updateDoc } from '../hooks/useDocs';
 import AdminShell from '../components/AdminShell';
 
 const syne = { fontFamily: "'Syne', sans-serif" };
+const PAGE_SIZE = 8;
+const SORTS = {
+  order: ['Urutan', (a, b) => (a.order ?? 0) - (b.order ?? 0)],
+  newest: ['Terbaru', (a, b) => (b.updatedAt?.seconds ?? 0) - (a.updatedAt?.seconds ?? 0)],
+  title: ['Judul A–Z', (a, b) => (a.title ?? '').localeCompare(b.title ?? '')],
+};
 const FILTERS = [['all', 'Semua'], ['public', 'Public'], ['private', 'Private']];
 
 function Switch({ on, onClick, label }) {
@@ -32,6 +38,8 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
   const [search, setSearch] = useState('');
+  const [sort, setSort] = useState('order');
+  const [page, setPage] = useState(1);
   const [confirmId, setConfirmId] = useState(null);
   const [toast, setToast] = useState('');
   const navigate = useNavigate();
@@ -83,10 +91,15 @@ export default function AdminDashboard() {
   }), [docs]);
 
   const q = search.trim().toLowerCase();
-  const shown = docs.filter(d =>
-    (filter === 'all' || (filter === 'public') === Boolean(d.published)) &&
-    (!q || `${d.title} ${d.description} ${d.slug}`.toLowerCase().includes(q))
-  );
+  const filtered = docs
+    .filter(d =>
+      (filter === 'all' || (filter === 'public') === Boolean(d.published)) &&
+      (!q || `${d.title} ${d.description} ${d.slug}`.toLowerCase().includes(q))
+    )
+    .sort(SORTS[sort][1]);
+  const pages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const cur = Math.min(page, pages); // halaman aman kalau data berkurang (mis. habis hapus)
+  const shown = filtered.slice((cur - 1) * PAGE_SIZE, cur * PAGE_SIZE);
 
   return (
     <AdminShell
@@ -113,7 +126,7 @@ export default function AdminDashboard() {
           {FILTERS.map(([k, l]) => (
             <button
               key={k}
-              onClick={() => setFilter(k)}
+              onClick={() => { setFilter(k); setPage(1); }}
               className="px-3.5 py-1 rounded-full text-xs font-semibold transition-colors"
               style={{ ...syne, background: filter === k ? '#c4955a' : 'transparent', color: filter === k ? '#0b0a09' : '#7a6d5e' }}
             >
@@ -124,12 +137,21 @@ export default function AdminDashboard() {
         <input
           type="search"
           value={search}
-          onChange={e => setSearch(e.target.value)}
+          onChange={e => { setSearch(e.target.value); setPage(1); }}
           placeholder="Cari judul atau slug..."
           aria-label="Cari dokumen"
           className="flex-1 min-w-[180px] max-w-xs bg-[#0f0d0b]/70 border border-[#2c2620] rounded-full px-4 py-2 text-sm outline-none focus:border-[#c4955a] transition-colors"
           style={syne}
         />
+        <select
+          value={sort}
+          onChange={e => { setSort(e.target.value); setPage(1); }}
+          aria-label="Urutkan"
+          className="bg-[#0f0d0b]/70 border border-[#2c2620] rounded-full px-4 py-2 text-sm text-[#7a6d5e] outline-none focus:border-[#c4955a] transition-colors"
+          style={syne}
+        >
+          {Object.entries(SORTS).map(([k, [l]]) => <option key={k} value={k}>{l}</option>)}
+        </select>
       </div>
 
       {loading && <p className="text-[#7a6d5e] text-sm py-16 text-center" style={syne}>Memuat...</p>}
@@ -163,6 +185,29 @@ export default function AdminDashboard() {
           </li>
         ))}
       </ul>
+
+      {pages > 1 && (
+        <nav aria-label="Halaman" className="flex items-center justify-between mt-6 text-xs" style={syne}>
+          <span className="text-[#7a6d5e]">
+            {(cur - 1) * PAGE_SIZE + 1}–{Math.min(cur * PAGE_SIZE, filtered.length)} dari {filtered.length}
+          </span>
+          <div className="flex items-center gap-1">
+            <button onClick={() => setPage(cur - 1)} disabled={cur === 1} className="px-3 py-1.5 rounded-full text-[#7a6d5e] hover:text-[#ede4d4] disabled:opacity-30 disabled:hover:text-[#7a6d5e] transition-colors">← Sebelumnya</button>
+            {Array.from({ length: pages }, (_, i) => i + 1).map(n => (
+              <button
+                key={n}
+                onClick={() => setPage(n)}
+                aria-current={n === cur ? 'page' : undefined}
+                className="w-8 h-8 rounded-full font-semibold transition-colors"
+                style={{ background: n === cur ? '#c4955a' : 'transparent', color: n === cur ? '#0b0a09' : '#7a6d5e' }}
+              >
+                {n}
+              </button>
+            ))}
+            <button onClick={() => setPage(cur + 1)} disabled={cur === pages} className="px-3 py-1.5 rounded-full text-[#7a6d5e] hover:text-[#ede4d4] disabled:opacity-30 disabled:hover:text-[#7a6d5e] transition-colors">Berikutnya →</button>
+          </div>
+        </nav>
+      )}
 
       {!loading && shown.length === 0 && !error && (
         <div className="cms-card text-center py-16 px-6">
