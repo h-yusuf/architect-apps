@@ -237,3 +237,48 @@ html.lenis, html.lenis body { height: auto; }
   transition: border-color 0.2s, transform 0.2s;
 }
 .cms-card:hover { border-color: var(--border-hover); }
+
+/* ── Cursor lingkar kecil (komponen Cursor) ── */
+.cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.cursor-ring::before {
+  content: '';
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  margin: -9px 0 0 -9px;
+  border: 1.5px solid var(--accent);
+  border-radius: 50%;
+  transition: transform 0.2s cubic-bezier(0.2, 0.7, 0.1, 1), background 0.2s;
+}
+.cursor-ring::after {
+  content: '';
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  margin: -1.5px 0 0 -1.5px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+.cursor-ring.is-link::before { transform: scale(1.7); background: var(--accent-ghost); }
+.cursor-ring.is-text { opacity: 0 !important; }
+html.has-cursor, html.has-cursor a, html.has-cursor button, html.has-cursor label,
+html.has-cursor [role="button"], html.has-cursor [role="switch"], html.has-cursor select { cursor: none; }
+html.has-cursor input:not([type="checkbox"]), html.has-cursor textarea { cursor: text; }
+.cursor-tail {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9998;
+  pointer-events: none;
+}

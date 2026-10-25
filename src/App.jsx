@@ -9,6 +9,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import AdminEditDoc from "./pages/AdminEditDoc";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Cursor from "./components/Cursor";
 
 function App() {
   // Tunggu Firebase restore sesi tersimpan; anonim hanya kalau benar-benar tidak ada user.
@@ -20,6 +21,8 @@ function App() {
   }, []);
 
   return (
+    <>
+    <Cursor />
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/doc/:slug" element={<DocDetail />} />
@@ -38,6 +41,7 @@ function App() {
       />
       <Route path="*" element={<NotFound />} />
     </Routes>
+    </>
   );
 }
 
