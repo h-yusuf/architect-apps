@@ -3,7 +3,6 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import { auth } from '../firebase';
 import useAuth from '../hooks/useAuth';
-import Backdrop from '../components/Backdrop';
 import PasswordInput from '../components/PasswordInput';
 import { Link } from 'react-router-dom';
 
@@ -47,8 +46,7 @@ export default function AdminLogin() {
   const syne = { fontFamily: "'Syne', sans-serif" };
 
   return (
-    <div className="min-h-screen text-[#ede4d4] grid md:grid-cols-[1.1fr_1fr]">
-      <Backdrop />
+    <div className="dotgrid dotgrid-fade relative isolate min-h-screen text-[#ede4d4] grid md:grid-cols-[1.1fr_1fr]">
       {/* Panel kiri: blueprint */}
       <aside className="hidden md:flex flex-col justify-between p-14 border-r border-[#2c2620]">
         <Link to="/" className="tracking-[0.2em] font-light" style={{ ...serif, fontSize: '1.1rem' }}>

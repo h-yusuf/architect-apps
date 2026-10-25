@@ -213,3 +213,27 @@ html.lenis, html.lenis body { height: auto; }
   z-index: -1;
   pointer-events: none;
 }
+
+/* ── CMS: latar dots lembut + bar atas melayang ── */
+.dotgrid {
+  background-image: radial-gradient(color-mix(in srgb, var(--text-3) 85%, transparent) 1px, transparent 1.3px);
+  background-size: 24px 24px;
+  -webkit-mask-image: none;
+}
+.dotgrid-fade::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 70% 55% at 50% 0%, color-mix(in srgb, var(--accent) 9%, transparent), transparent 70%),
+    radial-gradient(ellipse at center, transparent 40%, var(--bg) 100%);
+}
+.cms-card {
+  background: color-mix(in srgb, var(--surface-card) 82%, transparent);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  transition: border-color 0.2s, transform 0.2s;
+}
+.cms-card:hover { border-color: var(--border-hover); }
