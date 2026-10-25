@@ -14,15 +14,18 @@ export default function DocDetail() {
 
   useEffect(() => {
     if (authLoading) return;
+    let stale = false;
     setStatus('loading');
     getDocBySlug(slug)
       .then(data => {
+        if (stale) return;
         if (!data) { setStatus('not_found'); return; }
         if (!data.published && !isAdmin) { setStatus('not_found'); return; }
         setDoc(data);
         setStatus('ok');
       })
-      .catch(() => setStatus('error'));
+      .catch(() => { if (!stale) setStatus('error'); });
+    return () => { stale = true; };
   }, [slug, isAdmin, authLoading]);
 
   const topBar = (
@@ -88,7 +91,8 @@ export default function DocDetail() {
 
   if (status === 'error') return shell(
     <p className="text-red-400" style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.8rem' }}>
-      Gagal memuat dokumen.
+      Gagal memuat dokumen.{' '}
+      <button onClick={() => window.location.reload()} className="underline">Coba lagi</button>
     </p>
   );
 
@@ -127,6 +131,20 @@ export default function DocDetail() {
           )}
           <div className="mt-8 flex items-center gap-6">
             <div className="h-px w-12" style={{ background: 'var(--accent)' }} />
+            {isAdmin && !doc.published && (
+              <span className="uppercase tracking-[0.18em] font-semibold" style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.58rem', color: 'var(--text-2)' }}>
+                Private
+              </span>
+            )}
+            {isAdmin && (
+              <Link
+                to={`/admin/doc/${doc.id}/edit`}
+                className="uppercase tracking-[0.18em] font-semibold"
+                style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.58rem', color: 'var(--accent)' }}
+              >
+                Edit
+              </Link>
+            )}
             {isAdmin && <button
               onClick={() => {
                 const blob = new Blob([doc.content], { type: 'text/markdown' });

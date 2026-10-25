@@ -1,18 +1,20 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { signOut, signInAnonymously } from 'firebase/auth';
+import { useNavigate, Link } from 'react-router-dom';
+import { signOut } from 'firebase/auth';
 import { auth } from '../firebase';
 import { listDocs, deleteDoc, updateDoc } from '../hooks/useDocs';
 
 export default function AdminDashboard() {
   const [docs, setDocs] = useState([]);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   const loadDocs = () => {
     listDocs()
-      .then(setDocs)
-      .catch(() => setError('Gagal memuat dokumen.'));
+      .then(d => { setDocs(d); setError(''); })
+      .catch(() => setError('Gagal memuat dokumen.'))
+      .finally(() => setLoading(false));
   };
 
   useEffect(() => { loadDocs(); }, []);
@@ -29,8 +31,7 @@ export default function AdminDashboard() {
 
   const handleLogout = async () => {
     try {
-      await signOut(auth);
-      await signInAnonymously(auth);
+      await signOut(auth); // App.jsx otomatis login anonim lagi
     } catch {
       setError('Gagal logout. Coba lagi.');
       return;
@@ -57,6 +58,9 @@ export default function AdminDashboard() {
             Admin Dashboard
           </span>
           <div className="flex gap-4 items-center">
+            <Link to="/" className="text-[#7a6d5e] hover:text-[#ede4d4] transition-colors text-sm" style={syne}>
+              Lihat Situs
+            </Link>
             <button
               onClick={() => navigate('/admin/doc/new')}
               className="bg-[#c4955a] hover:bg-[#d4a56a] text-[#0b0a09] font-semibold px-4 py-1.5 rounded text-sm transition-colors"
@@ -78,7 +82,8 @@ export default function AdminDashboard() {
       <main className="max-w-4xl mx-auto px-6 py-8">
         {error && <p className="text-red-400 mb-5 text-xs" style={syne}>{error}</p>}
 
-        <table className="w-full text-sm" style={syne}>
+        <div className="overflow-x-auto">
+        <table className="w-full text-sm min-w-[560px]" style={syne}>
           <thead>
             <tr className="text-[#3d3630] text-left border-b border-[#2c2620]">
               <th className="pb-3 pr-4 font-medium text-xs tracking-wider uppercase">#</th>
@@ -114,6 +119,9 @@ export default function AdminDashboard() {
                   </button>
                 </td>
                 <td className="py-3.5 flex gap-4">
+                  <Link to={`/doc/${doc.slug}`} className="text-[#7a6d5e] hover:text-[#ede4d4] transition-colors text-xs font-medium">
+                    Lihat
+                  </Link>
                   <button
                     onClick={() => navigate(`/admin/doc/${doc.id}/edit`)}
                     className="text-[#c4955a] hover:text-[#ede4d4] transition-colors text-xs font-medium"
@@ -131,8 +139,11 @@ export default function AdminDashboard() {
             ))}
           </tbody>
         </table>
+        </div>
 
-        {docs.length === 0 && !error && (
+        {loading && <p className="text-[#3d3630] text-sm text-center mt-16" style={syne}>Memuat...</p>}
+
+        {!loading && docs.length === 0 && !error && (
           <p className="text-[#3d3630] text-sm text-center mt-16" style={syne}>
             Belum ada dokumen.
           </p>

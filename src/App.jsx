@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
-import { signInAnonymously } from "firebase/auth";
+import { onAuthStateChanged, signInAnonymously } from "firebase/auth";
 import { auth } from "./firebase";
 import Home from "./pages/Home";
 import DocDetail from "./pages/DocDetail";
@@ -11,10 +11,12 @@ import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
+  // Tunggu Firebase restore sesi tersimpan; anonim hanya kalau benar-benar tidak ada user.
+  // (Dulu cek auth.currentUser saat mount = selalu null -> sesi admin tertimpa anonim.)
   useEffect(() => {
-    if (!auth.currentUser || auth.currentUser.isAnonymous) {
-      signInAnonymously(auth).catch(console.error);
-    }
+    return onAuthStateChanged(auth, (u) => {
+      if (!u) signInAnonymously(auth).catch(console.error);
+    });
   }, []);
 
   return (

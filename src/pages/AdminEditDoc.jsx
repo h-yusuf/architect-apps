@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { createDoc, updateDoc, getDocBySlug, getDocById } from '../hooks/useDocs';
+import { createDoc, updateDoc, getDocBySlug, getDocById, listDocs } from '../hooks/useDocs';
+import MarkdownRenderer from '../components/MarkdownRenderer';
 
 function generateSlug(title) {
   return title
@@ -24,17 +25,32 @@ export default function AdminEditDoc() {
   const [submitting, setSubmitting] = useState(false);
   const [slugManual, setSlugManual] = useState(false);
   const [published, setPublished] = useState(false);
+  const [preview, setPreview] = useState(false);
+  const [dirty, setDirty] = useState(false);
+
+  useEffect(() => {
+    if (isEdit) return;
+    listDocs().then(d => setOrder(Math.max(0, ...d.map(x => Number(x.order) || 0)) + 1)).catch(() => {});
+  }, [isEdit]);
+
+  // peringatan sebelum tab ditutup kalau ada perubahan belum disimpan
+  useEffect(() => {
+    if (!dirty) return;
+    const h = e => { e.preventDefault(); e.returnValue = ''; };
+    window.addEventListener('beforeunload', h);
+    return () => window.removeEventListener('beforeunload', h);
+  }, [dirty]);
 
   useEffect(() => {
     if (!isEdit) return;
     getDocById(id)
       .then(d => {
         if (!d) { setError('Dokumen tidak ditemukan.'); return; }
-        setTitle(d.title);
-        setDescription(d.description);
+        setTitle(d.title ?? '');
+        setDescription(d.description ?? '');
         setSlug(d.slug);
         setOrder(d.order);
-        setContent(d.content);
+        setContent(d.content ?? '');
         setSlugManual(true);
         setPublished(d.published ?? false);
       })
@@ -50,11 +66,13 @@ export default function AdminEditDoc() {
     e.preventDefault();
     setError('');
     setSubmitting(true);
+    setDirty(false);
     try {
       const existing = await getDocBySlug(slug);
       if (existing && existing.id !== id) {
         setError(`Slug "${slug}" sudah dipakai dokumen lain.`);
         setSubmitting(false);
+        setDirty(true);
         return;
       }
       const data = { title, description, slug, order: Number(order), content, published };
@@ -96,8 +114,8 @@ export default function AdminEditDoc() {
         {error && (
           <p className="text-red-400 mb-5 text-xs leading-relaxed" style={syne}>{error}</p>
         )}
-        <form onSubmit={handleSubmit} className="flex flex-col gap-5" style={syne}>
-          <div className="grid grid-cols-2 gap-4">
+        <form onSubmit={handleSubmit} onChange={() => setDirty(true)} className="flex flex-col gap-5" style={syne}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="flex flex-col gap-1.5">
               <label className="text-[#7a6d5e] text-xs uppercase tracking-wider font-medium">Judul</label>
               <input
@@ -181,7 +199,22 @@ export default function AdminEditDoc() {
                 />
               </label>
             </div>
+            <div className="flex gap-2">
+              {[['Tulis', false], ['Preview', true]].map(([l, v]) => (
+                <button key={l} type="button" onClick={() => setPreview(v)}
+                  className="px-3 py-1 rounded text-xs font-semibold uppercase tracking-wider transition-colors"
+                  style={{ background: preview === v ? '#c4955a' : '#1c1915', color: preview === v ? '#0b0a09' : '#7a6d5e' }}>
+                  {l}
+                </button>
+              ))}
+            </div>
+            {preview && (
+              <div className="border border-[#2c2620] rounded p-6 min-h-[20rem]">
+                <MarkdownRenderer content={content} />
+              </div>
+            )}
             <textarea
+              hidden={preview}
               value={content}
               onChange={e => setContent(e.target.value)}
               rows={22}

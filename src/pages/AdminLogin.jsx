@@ -26,7 +26,13 @@ export default function AdminLogin() {
       await signInWithEmailAndPassword(auth, email, password);
       navigate('/admin/dashboard', { replace: true });
     } catch (err) {
-      setError(err.message);
+      setError(
+        ['auth/invalid-credential', 'auth/wrong-password', 'auth/user-not-found', 'auth/invalid-email'].includes(err.code)
+          ? 'Email atau password salah.'
+          : err.code === 'auth/too-many-requests'
+            ? 'Terlalu banyak percobaan. Coba lagi nanti.'
+            : 'Gagal masuk. Cek koneksi lalu coba lagi.'
+      );
     } finally {
       setSubmitting(false);
     }
@@ -62,6 +68,8 @@ export default function AdminLogin() {
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <input
               type="email"
+              autoComplete="username"
+              autoFocus
               placeholder="Email"
               value={email}
               onChange={e => setEmail(e.target.value)}
@@ -71,6 +79,7 @@ export default function AdminLogin() {
             />
             <input
               type="password"
+              autoComplete="current-password"
               placeholder="Password"
               value={password}
               onChange={e => setPassword(e.target.value)}

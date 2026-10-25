@@ -1,8 +1,22 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { listDocs, listPublishedDocs } from '../hooks/useDocs';
 import useAuth from '../hooks/useAuth';
 import ThemeToggle from '../components/ThemeToggle';
+
+const privateBadge = {
+  fontFamily: "'Syne', sans-serif",
+  fontSize: '0.5rem',
+  color: 'var(--text-2)',
+  background: 'var(--border-subtle)',
+  border: '1px solid var(--border)',
+  borderRadius: '2px',
+  padding: '2px 6px',
+  letterSpacing: '0.15em',
+  textTransform: 'uppercase',
+  display: 'inline-block',
+  alignSelf: 'flex-start',
+};
 
 function CardVisual({ number, size = 'sm' }) {
   return (
@@ -80,18 +94,7 @@ function FeaturedCard({ doc, onClick }) {
           </h2>
           {!doc.published && (
             <span
-              style={{
-                fontFamily: "'Syne', sans-serif",
-                fontSize: '0.5rem',
-                color: '#7a6d5e',
-                background: '#1c1915',
-                border: '1px solid #2c2620',
-                borderRadius: '2px',
-                padding: '2px 6px',
-                letterSpacing: '0.15em',
-                textTransform: 'uppercase',
-                display: 'inline-block',
-              }}
+              style={privateBadge}
             >
               Private
             </span>
@@ -147,18 +150,7 @@ function GridCard({ doc, number, delay, onClick }) {
         </h2>
         {!doc.published && (
           <span
-            style={{
-              fontFamily: "'Syne', sans-serif",
-              fontSize: '0.5rem',
-              color: '#7a6d5e',
-              background: '#1c1915',
-              border: '1px solid #2c2620',
-              borderRadius: '2px',
-              padding: '2px 6px',
-              letterSpacing: '0.15em',
-              textTransform: 'uppercase',
-              display: 'inline-block',
-            }}
+            style={privateBadge}
           >
             Private
           </span>
@@ -189,6 +181,7 @@ export default function Home() {
   const [docs, setDocs] = useState([]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState('');
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
   const isAdmin = user && !user.isAnonymous;
@@ -196,16 +189,22 @@ export default function Home() {
   useEffect(() => {
     if (authLoading) return;
     const adminNow = user && !user.isAnonymous;
+    let stale = false;
     setLoading(true);
-    const fetcher = adminNow ? listDocs() : listPublishedDocs();
-    fetcher
-      .then(setDocs)
-      .catch(() => setError('Gagal memuat dokumen.'))
-      .finally(() => setLoading(false));
+    setError('');
+    (adminNow ? listDocs() : listPublishedDocs())
+      .then(d => { if (!stale) setDocs(d); })
+      .catch(() => { if (!stale) setError('Gagal memuat dokumen.'); })
+      .finally(() => { if (!stale) setLoading(false); });
+    return () => { stale = true; };
   }, [user, authLoading]);
 
-  const featured = docs[0] || null;
-  const rest = docs.slice(1);
+  const q = search.trim().toLowerCase();
+  const shown = q
+    ? docs.filter(d => `${d.title} ${d.description}`.toLowerCase().includes(q))
+    : docs;
+  const featured = q ? null : shown[0] || null;
+  const rest = q ? shown : shown.slice(1);
 
   return (
     <div className="min-h-screen">
@@ -220,7 +219,16 @@ export default function Home() {
             >
               Dokumentasi &amp; Karya
             </p>
-            <div className="anim-fade-in" style={{ animationDelay: '40ms' }}>
+            <div className="anim-fade-in flex items-center gap-5" style={{ animationDelay: '40ms' }}>
+              {isAdmin && (
+                <Link
+                  to="/admin/dashboard"
+                  className="uppercase tracking-[0.18em] font-semibold"
+                  style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.58rem', color: 'var(--accent)' }}
+                >
+                  Dashboard →
+                </Link>
+              )}
               <ThemeToggle />
             </div>
           </div>
@@ -268,6 +276,18 @@ export default function Home() {
           </p>
         )}
 
+        {docs.length > 3 && (
+          <input
+            type="search"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            placeholder="Cari karya..."
+            aria-label="Cari karya"
+            className="w-full max-w-sm mb-10 bg-transparent rounded px-4 py-2.5 text-sm outline-none transition-colors"
+            style={{ border: '1px solid var(--border)', color: 'var(--text-1)', fontFamily: "'Syne', sans-serif" }}
+          />
+        )}
+
         {featured && (
           <section className="anim-fade-up mb-14" style={{ animationDelay: '200ms' }}>
             <FeaturedCard doc={featured} onClick={() => navigate(`/doc/${featured.slug}`)} />
@@ -291,13 +311,19 @@ export default function Home() {
                 <GridCard
                   key={doc.id}
                   doc={doc}
-                  number={i + 2}
+                  number={q ? i + 1 : i + 2}
                   delay={220 + i * 65}
                   onClick={() => navigate(`/doc/${doc.slug}`)}
                 />
               ))}
             </div>
           </>
+        )}
+
+        {!loading && q && shown.length === 0 && (
+          <p className="text-center py-20 text-sm" style={{ fontFamily: "'Syne', sans-serif", color: 'var(--text-2)' }}>
+            Tidak ada hasil untuk "{search}".
+          </p>
         )}
 
         {!loading && docs.length === 0 && !error && (
@@ -318,12 +344,13 @@ export default function Home() {
           >
             H. YUSUF
           </span>
-          <span
+          <Link
+            to={isAdmin ? '/admin/dashboard' : '/admin'}
             className="uppercase tracking-[0.2em]"
             style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.52rem', color: 'var(--text-3)' }}
           >
-            Arsitek
-          </span>
+            {isAdmin ? 'Dashboard' : 'Admin'}
+          </Link>
         </div>
       </footer>
     </div>
