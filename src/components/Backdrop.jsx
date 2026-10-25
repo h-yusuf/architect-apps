@@ -6,7 +6,7 @@ const gauss = () => (Math.random() + Math.random() + Math.random() - 1.5) / 1.5;
 const stars = [
   ...Array.from({ length: 3200 }, (_, i) => {
     const r = Math.pow(Math.random(), 0.7);
-    return { r, th: (i % 4) * (Math.PI / 2) + r * 3.4 + gauss() * (0.1 + (1 - r) * 0.5), a: 0.15 + (1 - r) * 0.5, s: Math.random() < 0.06 ? 1.8 : 1, ph: Math.random() * 6.283 };
+    return { r, th: (i % 4) * (Math.PI / 2) - r * 3.4 + gauss() * (0.1 + (1 - r) * 0.5), a: 0.15 + (1 - r) * 0.5, s: Math.random() < 0.06 ? 1.8 : 1, ph: Math.random() * 6.283 };
   }),
   ...Array.from({ length: 700 }, () => {
     const r = Math.abs(gauss()) * 0.22;
@@ -82,7 +82,7 @@ export default function Backdrop() {
       });
       const t = frame * 0.02;
       for (const p of stars) {
-        const th = p.th + rot * (1.4 - p.r); // inti berputar lebih cepat dari tepi
+        const th = p.th + rot; // seluruh galaksi berputar bersama; lengan melengkung ke belakang arah putar
         const x = Math.cos(th) * p.r * R, y = Math.sin(th) * p.r * R * 0.42;
         ctx.fillStyle = `rgba(${ink},${p.a * (0.75 + 0.25 * Math.sin(t + p.ph))})`;
         ctx.beginPath();

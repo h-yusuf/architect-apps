@@ -7,6 +7,7 @@ import "./index.css";
 
 if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
   const lenis = new Lenis();
+  window.__lenis = lenis; // dipakai TOC untuk smooth scroll
   const raf = (t) => { lenis.raf(t); requestAnimationFrame(raf); };
   requestAnimationFrame(raf);
 }
