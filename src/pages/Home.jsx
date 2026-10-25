@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { listDocs, listPublishedDocs } from '../hooks/useDocs';
 import useAuth from '../hooks/useAuth';
-import ThemeToggle from '../components/ThemeToggle';
 import useReveal from '../hooks/useReveal';
+import PillNav from '../components/PillNav';
+import Backdrop from '../components/Backdrop';
 
 const privateBadge = {
   fontFamily: "'Syne', sans-serif",
@@ -211,21 +212,8 @@ export default function Home() {
 
   return (
     <div className="min-h-screen">
-
-      <nav className="pill-nav anim-fade-in" aria-label="Utama">
-        <a href="#top" className="tracking-[0.18em] font-light" style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1rem', color: 'var(--text-1)' }}>
-          H. YUSUF
-        </a>
-        <div className="flex items-center gap-5">
-          <a href="#karya" className="uppercase tracking-[0.18em] font-semibold" style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.58rem', color: 'var(--text-2)' }}>
-            <span className="roll"><span>Karya</span><span aria-hidden="true">Karya</span></span>
-          </a>
-          <Link to={isAdmin ? '/admin/dashboard' : '/admin'} className="uppercase tracking-[0.18em] font-semibold" style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.58rem', color: 'var(--accent)' }}>
-            <span className="roll"><span>{isAdmin ? 'Dashboard' : 'Admin'}</span><span aria-hidden="true">{isAdmin ? 'Dashboard' : 'Admin'}</span></span>
-          </Link>
-          <ThemeToggle />
-        </div>
-      </nav>
+      <Backdrop />
+      <PillNav />
 
       <header id="top" style={{ borderBottom: '1px solid var(--border)' }}>
         <div className="max-w-screen-xl mx-auto px-6 md:px-14 py-16 md:py-28">
@@ -261,6 +249,7 @@ export default function Home() {
             <span className="roll"><span>Lihat karya</span><span aria-hidden="true">Lihat karya</span></span>
             <span aria-hidden="true">↓</span>
           </a>
+          <div className="draft-rule mt-16 md:mt-24" />
         </div>
       </header>
 

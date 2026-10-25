@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { getDocBySlug } from '../hooks/useDocs';
 import MarkdownRenderer from '../components/MarkdownRenderer';
-import ThemeToggle from '../components/ThemeToggle';
+import PillNav from '../components/PillNav';
+import Backdrop from '../components/Backdrop';
 import useAuth from '../hooks/useAuth';
 
 export default function DocDetail() {
@@ -28,33 +29,11 @@ export default function DocDetail() {
     return () => { stale = true; };
   }, [slug, isAdmin, authLoading]);
 
-  const topBar = (
-    <div style={{ borderBottom: '1px solid var(--border)' }}>
-      <div className="max-w-screen-xl mx-auto px-6 md:px-14 py-4 flex items-center justify-between">
-        <Link
-          to="/"
-          className="uppercase tracking-[0.16em] font-semibold flex items-center gap-2 transition-colors duration-200"
-          style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.58rem', color: 'var(--text-2)' }}
-          onMouseEnter={e => e.currentTarget.style.color = 'var(--accent)'}
-          onMouseLeave={e => e.currentTarget.style.color = 'var(--text-2)'}
-        >
-          ← Kembali
-        </Link>
-        <div className="flex items-center gap-5">
-          <span
-            className="tracking-[0.18em] font-light"
-            style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '0.92rem', color: 'var(--text-3)' }}
-          >
-            H. YUSUF
-          </span>
-          <ThemeToggle />
-        </div>
-      </div>
-    </div>
-  );
+  const topBar = <PillNav back />;
 
   const shell = (children) => (
     <div className="min-h-screen">
+      <Backdrop />
       {topBar}
       <main className="max-w-screen-xl mx-auto px-6 md:px-14 py-12 md:py-16">{children}</main>
     </div>
@@ -98,6 +77,7 @@ export default function DocDetail() {
 
   return (
     <div className="min-h-screen">
+      <Backdrop />
       {topBar}
 
       {/* Document hero */}
