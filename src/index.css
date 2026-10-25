@@ -124,3 +124,56 @@ body::before {
   transform-origin: left;
   animation: expandX 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
+
+/* ── Floating pill nav ── */
+.pill-nav {
+  position: sticky;
+  top: 14px;
+  z-index: 50;
+  margin: 14px auto 0;
+  width: min(calc(100% - 24px), 760px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 14px 10px 22px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--bg) 72%, transparent);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+  backdrop-filter: blur(14px) saturate(1.2);
+}
+
+/* ── Roll-on-hover text (duplicate span slides up) ── */
+.roll {
+  display: inline-block;
+  overflow: hidden;
+  height: 1.2em;
+  line-height: 1.2em;
+  vertical-align: bottom;
+}
+.roll > span {
+  display: block;
+  transition: transform 0.4s cubic-bezier(0.2, 0.7, 0.1, 1);
+}
+a:hover > .roll > span,
+button:hover > .roll > span { transform: translateY(-100%); }
+
+/* ── Scroll reveal ── */
+.reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.7s cubic-bezier(0.2, 0.7, 0.1, 1), transform 0.7s cubic-bezier(0.2, 0.7, 0.1, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+.reveal.in { opacity: 1; transform: none; }
+
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
+  .roll > span { transition: none; }
+  a:hover > .roll > span, button:hover > .roll > span { transform: none; }
+  .anim-fade-up, .anim-fade-in { animation: none; opacity: 1; }
+}

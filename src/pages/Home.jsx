@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { listDocs, listPublishedDocs } from '../hooks/useDocs';
 import useAuth from '../hooks/useAuth';
 import ThemeToggle from '../components/ThemeToggle';
+import useReveal from '../hooks/useReveal';
 
 const privateBadge = {
   fontFamily: "'Syne', sans-serif",
@@ -125,15 +126,17 @@ function FeaturedCard({ doc, onClick }) {
 
 function GridCard({ doc, number, delay, onClick }) {
   const [hovered, setHovered] = useState(false);
+  const ref = useReveal();
   return (
     <button
+      ref={ref}
       onClick={onClick}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className="anim-fade-up text-left rounded-2xl overflow-hidden flex flex-col transition-colors duration-300"
+      className="reveal text-left rounded-2xl overflow-hidden flex flex-col transition-colors duration-300"
       style={{
         border: `1px solid ${hovered ? 'var(--border-hover)' : 'var(--border)'}`,
-        animationDelay: `${delay}ms`,
+        '--reveal-delay': `${(delay % 3) * 80}ms`,
       }}
     >
       <CardVisual number={number} size="sm" />
@@ -209,58 +212,59 @@ export default function Home() {
   return (
     <div className="min-h-screen">
 
-      {/* Page header */}
-      <header style={{ borderBottom: '1px solid var(--border)' }}>
-        <div className="max-w-screen-xl mx-auto px-6 md:px-14 py-14 md:py-20">
-          <div className="flex items-center justify-between mb-5">
-            <p
-              className="anim-fade-in uppercase font-semibold tracking-[0.3em]"
-              style={{ color: 'var(--accent)', fontFamily: "'Syne', sans-serif", fontSize: '0.58rem', animationDelay: '0ms' }}
-            >
-              Dokumentasi &amp; Karya
-            </p>
-            <div className="anim-fade-in flex items-center gap-5" style={{ animationDelay: '40ms' }}>
-              {isAdmin && (
-                <Link
-                  to="/admin/dashboard"
-                  className="uppercase tracking-[0.18em] font-semibold"
-                  style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.58rem', color: 'var(--accent)' }}
-                >
-                  Dashboard →
-                </Link>
-              )}
-              <ThemeToggle />
-            </div>
-          </div>
+      <nav className="pill-nav anim-fade-in" aria-label="Utama">
+        <a href="#top" className="tracking-[0.18em] font-light" style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1rem', color: 'var(--text-1)' }}>
+          H. YUSUF
+        </a>
+        <div className="flex items-center gap-5">
+          <a href="#karya" className="uppercase tracking-[0.18em] font-semibold" style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.58rem', color: 'var(--text-2)' }}>
+            <span className="roll"><span>Karya</span><span aria-hidden="true">Karya</span></span>
+          </a>
+          <Link to={isAdmin ? '/admin/dashboard' : '/admin'} className="uppercase tracking-[0.18em] font-semibold" style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.58rem', color: 'var(--accent)' }}>
+            <span className="roll"><span>{isAdmin ? 'Dashboard' : 'Admin'}</span><span aria-hidden="true">{isAdmin ? 'Dashboard' : 'Admin'}</span></span>
+          </Link>
+          <ThemeToggle />
+        </div>
+      </nav>
+
+      <header id="top" style={{ borderBottom: '1px solid var(--border)' }}>
+        <div className="max-w-screen-xl mx-auto px-6 md:px-14 py-16 md:py-28">
+          <p
+            className="anim-fade-in uppercase font-semibold tracking-[0.3em] mb-5"
+            style={{ color: 'var(--accent)', fontFamily: "'Syne', sans-serif", fontSize: '0.58rem' }}
+          >
+            Arsitek · Dokumentasi &amp; Karya
+          </p>
           <h1
             className="anim-fade-up font-light leading-[1.02]"
             style={{
               fontFamily: "'Cormorant Garamond', serif",
-              fontSize: 'clamp(3.8rem, 9vw, 7rem)',
+              fontSize: 'clamp(3.8rem, 10vw, 8.5rem)',
               letterSpacing: '-0.02em',
               color: 'var(--text-1)',
               animationDelay: '80ms',
             }}
           >
-            H. Yusuf
+            Desain yang<br />dibangun <em style={{ color: 'var(--accent)' }}>dengan teliti.</em>
           </h1>
           <p
-            className="anim-fade-up font-normal mt-5"
-            style={{
-              fontFamily: "'Syne', sans-serif",
-              fontSize: '0.82rem',
-              maxWidth: '46ch',
-              lineHeight: 1.7,
-              color: 'var(--text-2)',
-              animationDelay: '140ms',
-            }}
+            className="anim-fade-up font-normal mt-6"
+            style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.85rem', maxWidth: '46ch', lineHeight: 1.7, color: 'var(--text-2)', animationDelay: '140ms' }}
           >
-            Arsitek. Catatan desain, referensi teknis, dan dokumentasi proyek.
+            Saya H. Yusuf. Catatan desain, referensi teknis, dan dokumentasi proyek, dikumpulkan di satu tempat.
           </p>
+          <a
+            href="#karya"
+            className="anim-fade-up inline-flex items-center gap-3 mt-9 rounded-full px-6 py-3 uppercase tracking-[0.18em] font-semibold transition-colors"
+            style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.6rem', background: 'var(--accent)', color: 'var(--bg)', animationDelay: '200ms' }}
+          >
+            <span className="roll"><span>Lihat karya</span><span aria-hidden="true">Lihat karya</span></span>
+            <span aria-hidden="true">↓</span>
+          </a>
         </div>
       </header>
 
-      <main className="max-w-screen-xl mx-auto px-6 md:px-14 py-14">
+      <main id="karya" className="max-w-screen-xl mx-auto px-6 md:px-14 py-14 scroll-mt-20">
         {error && (
           <p className="text-red-400 mb-6 text-sm" style={{ fontFamily: "'Syne', sans-serif" }}>
             {error}
